@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="com.dexels.wearable.command">
+   <property name="osgi.command.scope" type="String" value="usb"/>
+   <property name="osgi.command.function" type="String" value="registration"/>
+   <implementation class="com.dexels.wearable.command.UsbCommands"/>
+   <service>
+      <provide interface="com.dexels.wearable.command.UsbCommands"/>
+   </service>
+   <reference bind="setDataProvider" cardinality="1..1" interface="com.dexels.wearable.driver.DataProvider" name="DataProvider" policy="dynamic" unbind="clearDataProvider"/>
+</scr:component>

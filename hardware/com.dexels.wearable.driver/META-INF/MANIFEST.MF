@@ -4,12 +4,15 @@ Bundle-Name: Driver
 Bundle-SymbolicName: com.dexels.wearable.driver
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: DEXELS
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: org.osgi.framework;version="1.3.0",
- org.osgi.service.event;version="1.3.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package:  org.apache.felix.service.command;status=provisional;version="0.10.0",
+ org.osgi.framework;version="1.3.0",
+ org.osgi.service.event;version="1.3.0",
+ org.slf4j;version="[1.6.0,1.8.0)"
 Bundle-ClassPath: .,
  lib/classes/
-Service-Component: OSGI-INF/com.dexels.wearable.driver.xml
+Service-Component: OSGI-INF/com.dexels.wearable.driver.xml,
+ OSGI-INF/com.dexels.wearable.command.xml
 Bundle-NativeCode: lib/native/mac/32/libhidapi-jni.jnilib; processor=x86; osname=macosx,
  lib/native/mac/64/libhidapi-jni.jnilib; processor=x86_64; osname=macosx,
  lib/native/linux/32/libhidapi-jni.so; processor=x86; osname=Linux,
