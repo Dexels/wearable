@@ -44,7 +44,7 @@ public class USBDriver {
 		try {
 	        final HIDDevice hd;
 			hd = getDevice(VENDOR_ID, PRODUCT_ID);
-	        dp = new DataProvider() {
+			dp = new DataProvider() {
 				
 				@Override
 				public int sendFeatureReport(byte[] data) throws IOException {
@@ -103,18 +103,19 @@ public class USBDriver {
      */
     private void readDevice(DataProvider dev) throws IOException
     {
-    	System.err.println("starting read device");
+//    	System.err.println("starting read device");
                 byte[] buf = new byte[BUFSIZE];
-//                dev.enableBlocking();
-                byte[] startRegistration = new byte[]{0x13,0x0d,0x03,0x01,0,0,0,0,0,0,0,0};
-                byte[] stopRegistration  = new byte[]{0x13,0x0d,0x03,0x0,0,0,0,0,0,0,0,0};
-                byte[] registerWristband  = new byte[]{0x13,0x0d,0x04,1,1,1,1,1,1,2,2,0};
-                try {
-					Thread.sleep(3000);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
-                dev.sendFeatureReport(startRegistration);
+////                dev.enableBlocking();
+//                byte[] startRegistration = new byte[]{0x13,0x0d,0x03,0x01,0,0,0,0,0,0,0,0};
+//                byte[] stopRegistration  = new byte[]{0x13,0x0d,0x03,0x0,0,0,0,0,0,0,0,0};
+//                byte[] registerWristband  = new byte[]{0x13,0x0d,0x04,1,1,1,1,1,1,2,2,0};
+//                try {
+//					Thread.sleep(3000);
+//				} catch (InterruptedException e1) {
+//					e1.printStackTrace();
+//				}
+//                dev.sendFeatureReport(startRegistration);
+                
                 while(running)
                 {
                 	try {
@@ -123,7 +124,9 @@ public class USBDriver {
 						e.printStackTrace();
 					}
                 	int result = dev.getFeatureReport(buf);
-                	System.err.println("result: "+result);
+                	if(result>0) {
+                    	System.err.println("result: "+result);
+                	}
                 }
 
     }
