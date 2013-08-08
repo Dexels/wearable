@@ -1,6 +1,7 @@
 package com.dexels.wearable.driver.impl;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,6 +14,8 @@ import com.codeminders.hidapi.HIDDevice;
 import com.codeminders.hidapi.HIDDeviceInfo;
 import com.codeminders.hidapi.HIDDeviceNotFoundException;
 import com.codeminders.hidapi.HIDManager;
+import com.dexels.fps.packet.Packet;
+import com.dexels.fps.packet.impl.PacketFactoryImpl;
 import com.dexels.wearable.driver.DataProvider;
 
 public class USBDriver {
@@ -20,10 +23,11 @@ public class USBDriver {
     static final int VENDOR_ID = 4292;
     static final int PRODUCT_ID = 34128;
 
-    private static final int BUFSIZE = 2048;
+    private static final int BUFSIZE = 65;
     private static final long READ_UPDATE_DELAY_MS = 50L;
 
-    
+    final protected static char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+
 	private final static Logger logger = LoggerFactory
 			.getLogger(USBDriver.class);
     
@@ -52,8 +56,14 @@ public class USBDriver {
 				}
 				
 				@Override
-				public int getFeatureReport(byte[] buf) throws IOException {
-					return hd.getFeatureReport(buf);
+				public int getFeatureReport(byte[] buf, int length, int reportId) throws IOException {
+					buf[0] = (byte) reportId;
+//					buf[1] = (byte)0x4b;
+//					byte[] b = Arrays.copyOf(buf, length);
+//					System.err.println("length: "+length+" Request: "+bytesToHex(b));
+//					hd.getFeatureReport(buf,length);
+					return hd.readTimeout(buf,1000);
+//					return hd.getFeatureReport(buf,length);
 				}
 			};
 		} catch (HIDDeviceNotFoundException e1) {
@@ -67,8 +77,8 @@ public class USBDriver {
 				}
 				
 				@Override
-				public int getFeatureReport(byte[] buf) throws IOException {
-					logger.info("Dummy data provider: get");
+				public int getFeatureReport(byte[] buf, int length, int reportId) throws IOException {
+					logger.info("Dummy data provider: get reportid: "+reportId);
 					return 0;
 				}
 			};
@@ -104,7 +114,6 @@ public class USBDriver {
     private void readDevice(DataProvider dev) throws IOException
     {
 //    	System.err.println("starting read device");
-                byte[] buf = new byte[BUFSIZE];
 ////                dev.enableBlocking();
 //                byte[] startRegistration = new byte[]{0x13,0x0d,0x03,0x01,0,0,0,0,0,0,0,0};
 //                byte[] stopRegistration  = new byte[]{0x13,0x0d,0x03,0x0,0,0,0,0,0,0,0,0};
@@ -118,15 +127,21 @@ public class USBDriver {
                 
                 while(running)
                 {
+                	
                 	try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
-                	int result = dev.getFeatureReport(buf);
+                    byte[] buf = new byte[BUFSIZE];
+                	int result = dev.getFeatureReport (buf,64,1);
+                	
+                	System.err.println("result: "+bytesToHex(buf));
                 	if(result>0) {
-                    	System.err.println("result: "+result);
                 	}
+//                	PacketFactoryImpl pfi = new PacketFactoryImpl();
+//                	Packet p = pfi.createFactory(buf, result);
+//                	System.err.println("signal: "+p.getSignalStrength());
                 }
 
     }
@@ -177,5 +192,17 @@ public class USBDriver {
 		manager.release();
 		System.gc();
 		bundleContext = null;
+	}
+
+
+	public static String bytesToHex(byte[] bytes) {
+	    char[] hexChars = new char[bytes.length * 2];
+	    int v;
+	    for ( int j = 0; j < bytes.length; j++ ) {
+	        v = bytes[j] & 0xFF;
+	        hexChars[j * 2] = hexArray[v >>> 4];
+	        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+	    }
+	    return new String(hexChars);
 	}
 }

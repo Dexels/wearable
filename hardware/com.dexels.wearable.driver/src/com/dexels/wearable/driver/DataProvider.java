@@ -11,6 +11,6 @@ public interface DataProvider {
      * @return the actual number of bytes read and  -1 on error
      * @throws IOException
      */
-    public int getFeatureReport(byte[] buf) throws IOException;
-   
+	public int getFeatureReport(byte[] buf, int length, int reportId) throws IOException;
+  
 }
